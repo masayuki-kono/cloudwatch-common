@@ -2,13 +2,8 @@ cmake_minimum_required(VERSION 2.8.3)
 project(cloudwatch_logs_common)
 set(CLOUDWATCH_LOGS_COMMON_VERSION 1.1.0)
 
-# Default to C11
-if(NOT CMAKE_C_STANDARD)
-  set(CMAKE_C_STANDARD 11)
-endif()
-# Default to C++14
-if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 14)
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
 # Enable strict compiler flags if possible.
@@ -31,11 +26,10 @@ find_package(dataflow_lite REQUIRED)
 find_package(file_management REQUIRED)
 find_package(aws_common REQUIRED)
 
-if(AWSSDK_FOUND)
-  set(SERVICE logs)
-  AWSSDK_DETERMINE_LIBS_TO_LINK(SERVICE OUTPUT)
-  link_directories("${AWSSDK_LIB_DIR}")
-endif()
+set(SERVICE_COMPONENTS logs)
+foreach(_service ${SERVICE_COMPONENTS})
+  list(APPEND ${PROJECT_NAME}_IMPORTED_LIBRARIES "aws-cpp-sdk-${_service}")
+endforeach()
 
 set(ALL_SRC_FILES
     src/log_batcher.cpp
@@ -46,7 +40,7 @@ set(ALL_SRC_FILES
     src/log_publisher.cpp)
 
 add_library(${PROJECT_NAME} SHARED ${ALL_SRC_FILES})
-target_link_libraries(${PROJECT_NAME} ${OUTPUT} ${file_management_LIBRARIES} ${dataflow_lite_LIBRARIES} stdc++fs)
+target_link_libraries(${PROJECT_NAME} ${${PROJECT_NAME}_IMPORTED_LIBRARIES} ${file_management_LIBRARIES} ${dataflow_lite_LIBRARIES} stdc++fs)
 target_include_directories(${PROJECT_NAME}
         PRIVATE ${AWSSDK_INCLUDE_DIRS}
         include ${aws_common_INCLUDE_DIRS} ${file_management_INCLUDE_DIRS} ${dataflow_lite_INCLUDE_DIRS})
