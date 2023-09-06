@@ -55,7 +55,6 @@ public:
     const std::string & log_group,
     const std::string & log_stream,
     const Aws::Client::ClientConfiguration & client_config,
-    const Aws::SDKOptions & sdk_options,
     const CloudWatchOptions & cloudwatch_options = kDefaultCloudWatchOptions);
 };
 

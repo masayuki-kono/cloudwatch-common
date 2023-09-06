@@ -43,11 +43,8 @@ std::shared_ptr<LogService> LogServiceFactory::CreateLogService(
   const std::string & log_group,
   const std::string & log_stream,
   const Aws::Client::ClientConfiguration & client_config,
-  const Aws::SDKOptions & sdk_options,
   const CloudWatchOptions & cloudwatch_options)
 {
-  Aws::InitAPI(sdk_options); // per the SDK team this only ever needs to be called once
-
   auto log_file_manager = std::make_shared<LogFileManager>(cloudwatch_options.file_manager_strategy_options);
 
   auto publisher = std::make_shared<LogPublisher>(log_group, log_stream, client_config);
