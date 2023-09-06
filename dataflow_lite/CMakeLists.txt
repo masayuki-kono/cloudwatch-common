@@ -24,12 +24,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARNING_CXX_FLAGS}")
 
 find_package(aws_common REQUIRED)
 
-if(AWSSDK_FOUND)
-  set(SERVICE core)
-  AWSSDK_DETERMINE_LIBS_TO_LINK(SERVICE OUTPUT)
-  link_directories("${AWSSDK_LIB_DIR}")
-endif()
-
 set(ALL_SRC_FILES
     src/dataflow/status_monitor.cpp
     )
