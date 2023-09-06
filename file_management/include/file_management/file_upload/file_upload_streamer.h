@@ -102,7 +102,7 @@ public:
   }
 
   void onPublisherStateChange(const Aws::DataFlow::Status &status) {
-    AWS_LOG_INFO(__func__,
+    AWS_LOG_DEBUG(__func__,
                  "Publisher state has changed to: %s",
                  (status == Aws::DataFlow::Status::AVAILABLE) ? "available" : "unavailable");
     network_monitor_->setStatus(status);

@@ -191,7 +191,7 @@ Aws::CloudWatchLogs::ROSCloudWatchLogsErrors LogPublisher::SendLogs(Aws::String 
     int tries = kMaxRetries;
     while (CW_LOGS_SUCCEEDED != send_logs_status && tries > 0) {
 
-      AWS_LOG_INFO(__func__, "Sending logs to CW");
+      AWS_LOG_DEBUG(__func__, "Sending logs to CW");
 
       if (!std::ifstream("/tmp/internet").good()) {
         send_logs_status = this->cloudwatch_facade_->SendLogsToCloudWatch(
