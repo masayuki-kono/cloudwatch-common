@@ -6,30 +6,12 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-# Enable strict compiler flags if possible.
-include(CheckCXXCompilerFlag)
-# Removed -Wmissing-declarations until gmock is ignored
-set(FLAGS -pedantic -Wno-long-long -Wall -Wextra -Wcast-qual -Wformat -Wwrite-strings -Wcast-align -Wno-error=cast-align)
-foreach(FLAG ${FLAGS})
-  check_cxx_compiler_flag(${FLAG} R${FLAG})
-  if(${R${FLAG}})
-    set(WARNING_CXX_FLAGS "${WARNING_CXX_FLAGS} ${FLAG}")
-  endif()
-endforeach()
-
-if(NOT DEFINED CXX_DISABLE_WERROR)
-  set(WARNING_CXX_FLAGS "-Werror ${WARNING_CXX_FLAGS}")
-endif()
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARNING_CXX_FLAGS}")
+set(SERVICE_COMPONENTS logs)
 
 find_package(dataflow_lite REQUIRED)
 find_package(file_management REQUIRED)
 find_package(aws_common REQUIRED)
-
-set(SERVICE_COMPONENTS logs)
-foreach(_service ${SERVICE_COMPONENTS})
-  list(APPEND ${PROJECT_NAME}_IMPORTED_LIBRARIES "aws-cpp-sdk-${_service}")
-endforeach()
+find_package(AWSSDK REQUIRED COMPONENTS ${SERVICE_COMPONENTS})
 
 set(ALL_SRC_FILES
     src/log_batcher.cpp
@@ -40,7 +22,7 @@ set(ALL_SRC_FILES
     src/log_publisher.cpp)
 
 add_library(${PROJECT_NAME} SHARED ${ALL_SRC_FILES})
-target_link_libraries(${PROJECT_NAME} ${${PROJECT_NAME}_IMPORTED_LIBRARIES} ${file_management_LIBRARIES} ${dataflow_lite_LIBRARIES} stdc++fs)
+target_link_libraries(${PROJECT_NAME} ${AWSSDK_LINK_LIBRARIES} ${file_management_LIBRARIES} ${dataflow_lite_LIBRARIES} stdc++fs)
 target_include_directories(${PROJECT_NAME}
         PRIVATE ${AWSSDK_INCLUDE_DIRS}
         include ${aws_common_INCLUDE_DIRS} ${file_management_INCLUDE_DIRS} ${dataflow_lite_INCLUDE_DIRS})

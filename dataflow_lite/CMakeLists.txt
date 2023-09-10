@@ -6,22 +6,6 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-# Enable strict compiler flags if possible.
-include(CheckCXXCompilerFlag)
-# Removed -Wmissing-declarations until gmock is ignored
-set(FLAGS -pedantic -Wno-long-long -Wall -Wextra -Wcast-qual -Wformat -Wwrite-strings -Wcast-align -Wno-error=cast-align)
-foreach(FLAG ${FLAGS})
-  check_cxx_compiler_flag(${FLAG} R${FLAG})
-  if(${R${FLAG}})
-    set(WARNING_CXX_FLAGS "${WARNING_CXX_FLAGS} ${FLAG}")
-  endif()
-endforeach()
-
-if(NOT DEFINED CXX_DISABLE_WERROR)
-  set(WARNING_CXX_FLAGS "-Werror ${WARNING_CXX_FLAGS}")
-endif()
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARNING_CXX_FLAGS}")
-
 find_package(aws_common REQUIRED)
 
 set(ALL_SRC_FILES
